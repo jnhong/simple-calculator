@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css?family=Montserrat');
+
+html {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 36px;
+}
+
+.calc-container {
+    width: 400px;
+    height: 600px;
+
+    padding: 10px;
+    grid-gap: 10px;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+
+    background-color: gray;
+}
+
+#calc-display {
+    grid-area: 1 / 1 / 1 / -1;
+
+    background-color: black;
+    color: green;
+    padding: 0px 30px;
+    justify-content: flex-end;
+}
+
+#calc-0 {
+    /* grid-column: 1 / span 2; */
+    grid-area: -2 / 1 / -2 / 3;
+}
+
+.calc-container > div {
+    /* styling */
+    background-color: white;
+    border-radius: 10px;
+
+    /* center items */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button:hover {
+    background-color: rgb(200, 200, 200);
+}
+
+.button:active {
+    background-color: rgb(100, 100, 100);
+}
