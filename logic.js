@@ -12,7 +12,7 @@ calculator.prefix = "calc-";
 calculator.negativeFlag = false;
 calculator.decimalFlag = false;
 calculator.allClearFlag = false;
-calculator.displayCharLimit = 15;
+calculator.displayDigitLimit = 12;
 
 /* data */
 // nuemric storage of input values
@@ -21,9 +21,9 @@ calculator.pendingOperand2 = null;
 
 calculator.pendingOperator = null; // use element handle
 
-// string storage of input value 
-calculator.integralChars = "";
-calculator.mantissaChars = "";
+// character array storage of input value
+calculator.integralChars = [];
+calculator.mantissaChars = [];
 
 /* methods */
 calculator.getCalcElement = function (label) {
@@ -41,28 +41,84 @@ for (let i = 0; i < 10; ++i) {
 }
 
 // get handles to all calculator
-for (let label of labels) {
+for (let label of calculator.labels) {
     calculator.getCalcElement(label);
 }
 
 /* get display element */
 calculator.display = document.getElementById("calc-display");
 
-for (let i = 0; i < 10; ++i) {
-    calculator[i].addEventListener("click", digitUpdate);
-}
+// calculator methods
 
-function digitUpdate (e) {
-    if (!calculator.decimalFlag) {
-        calculator.integralChars += e.target.textContent;
-    } else {
-        calculator.mantissaChars += e.target.textContent;
+calculator.displayLimitCheck = function (numChars) {
+    return this.integralChars.length + this.mantissaChars.length + numChars > this.displayDigitLimit;
+};
+
+// convert data into numeric form
+calculator.convertInputToNumber = function () {
+    if (this.integralChars.length == 0) {
+        this.integralChars.push("0");
     }
+    if (this.negativeFlag) {
+        this.integralChars.unshift("-");
+    }
+
+    let array, value;
+    if (this.decimalFlag) {
+        array = this.integralChars.concat(this.mantissaChars).join("");
+        value = parseFloat(array);
+    } else {
+        array = this.integralChars.join("");
+        value = parseInt(array);
+    }
+    return value;
+};
+
+// useful for updating display
+calculator.convertIntegralPartToNumber = function () {
+    if (this.integralChars.length == 0) {
+        this.integralChars.push("0");
+    }
+    if (this.negativeFlag) {
+        this.integralChars.unshift("-");
+    }
+
+    let array = this.integralChars.join("");
+    let value = parseInt(array);
+    return value;
+};
+
+calculator.updateDisplay = function () {
+    let displayText = calculator.convertIntegralPartToNumber().toLocaleString();
+    if (this.decimalFlag) {
+        displayText += ".";
+    }
+    displayText += calculator.mantissaChars.join("");
+    calculator.display.textContent = displayText; 
+};
+
+// calculator event listeners
+for (let i = 0; i < 10; ++i) {
+    calculator[i].addEventListener("click", (e) => {
+        if (calculator.displayLimitCheck(1)) {
+            return;
+        }
+        if (!calculator.decimalFlag) {
+            calculator.integralChars.push(e.target.textContent);
+        } else {
+            calculator.mantissaChars.unshift(e.target.textContent);
+        }
+        calculator.updateDisplay();
+    });
 }
 
 calculator["decimal"].addEventListener("click", (e) => { 
+    calculator.decimalFlag = true;
+    calculator.updateDisplay();
 });
 
+// TODO
+/*
 calculator["clear"].addEventListener("click", (e) => {
     // reset flags
     calculator.negativeFlag = false;
@@ -81,11 +137,29 @@ calculator["clear"].addEventListener("click", (e) => {
         calculator.pendingOperand2 = null;
         calculator.pendingOperator = null;
     }
+
+    calculator.updateDisplay();
 });
+*/
 
 calculator["plus-minus"].addEventListener("click", (e) => {
     calculator.negativeFlag = !calculator.negativeFlag;
+    calculator.updateDisplay();
 });
 
 calculator["percent"].addEventListener("click", (e) => {
+    if (calculator.displayLimitCheck(2)) {
+        return;
+    }
+
+    for (let i = 0; i < 2; ++i) {
+        let digit = calculator.integralChars.pop();
+        if (digit === undefined) {
+            digit = "0";
+        }
+        calculator.mantissaChars.unshift(digit);
+        calculator.decimalFlag = true;
+    }
+
+    calculator.updateDisplay();
 });
