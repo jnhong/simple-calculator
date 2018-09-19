@@ -1,32 +1,91 @@
+/*
+Possible features:
+scientific notation for overflow
+commas between every three digits
+*/
+let calculator = {};
 
-let buttons = {};
+/* constants */
+calculator.prefix = "calc-";
 
-buttons.prefix = "calc-";
-buttons.getCalcElement = function (label) {
+/* flags */
+calculator.negativeFlag = false;
+calculator.decimalFlag = false;
+calculator.allClearFlag = false;
+calculator.displayCharLimit = 15;
+
+/* data */
+// nuemric storage of input values
+calculator.pendingOperand1 = null;
+calculator.pendingOperand2 = null;
+
+calculator.pendingOperator = null; // use element handle
+
+// string storage of input value 
+calculator.integralChars = "";
+calculator.mantissaChars = "";
+
+/* methods */
+calculator.getCalcElement = function (label) {
     this[label] = document.getElementById(this.prefix + label);
 }
 
-// enumerate unique parts of labels
-let labels = ["clear", "plus-minus", "percent",
-              "divide", "multiply", "minus", "plus",
-              "decimal", "equals"];
+/* enumerate unique parts of labels */
+calculator.labels = ["clear", "plus-minus", "percent",
+                     "divide", "multiply", "minus", "plus",
+                     "decimal", "equals"];
 
-for (int i = 0; i < 10; ++i) {
-    labels.push(i);
+/* insert numeric labels */
+for (let i = 0; i < 10; ++i) {
+    calculator.labels.push(i);
 }
 
-// get handles to all buttons
+// get handles to all calculator
 for (let label of labels) {
-    buttons.getCalcElement(label);
+    calculator.getCalcElement(label);
 }
 
-let display = document.getElementById("calc-display");
-let pendingValue;
+/* get display element */
+calculator.display = document.getElementById("calc-display");
 
-for (int i = 0; i < 10; ++i) {
-    buttons[i] = addEventListener("click", updateDisplay);
+for (let i = 0; i < 10; ++i) {
+    calculator[i].addEventListener("click", digitUpdate);
 }
 
-function updateDisplay () {
-
+function digitUpdate (e) {
+    if (!calculator.decimalFlag) {
+        calculator.integralChars += e.target.textContent;
+    } else {
+        calculator.mantissaChars += e.target.textContent;
+    }
 }
+
+calculator["decimal"].addEventListener("click", (e) => { 
+});
+
+calculator["clear"].addEventListener("click", (e) => {
+    // reset flags
+    calculator.negativeFlag = false;
+    calculator.decimalFlag = false;
+    calculator.allClearFlag = false;
+
+    // reset storage values
+    calculator.integralChars = "";
+    calculator.mantissaChars = "";
+
+    // reste display
+    display.textContent = "0";
+
+    if (calculator.allClearFlag) {
+        calculator.pendingOperand1 = null;
+        calculator.pendingOperand2 = null;
+        calculator.pendingOperator = null;
+    }
+});
+
+calculator["plus-minus"].addEventListener("click", (e) => {
+    calculator.negativeFlag = !calculator.negativeFlag;
+});
+
+calculator["percent"].addEventListener("click", (e) => {
+});

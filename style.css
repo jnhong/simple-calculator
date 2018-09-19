@@ -35,7 +35,7 @@ html {
 
 .calc-container > div {
     /* styling */
-    background-color: white;
+    background-color: rgb(225, 225, 225);
     border-radius: 10px;
 
     /* center items */
@@ -45,9 +45,9 @@ html {
 }
 
 .button:hover {
-    background-color: rgb(200, 200, 200);
+    background-color: rgb(175, 175, 175);
 }
 
 .button:active {
-    background-color: rgb(100, 100, 100);
+    background-color: rgb(255, 255, 255);
 }
